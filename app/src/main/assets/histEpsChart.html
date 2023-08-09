@@ -1,0 +1,175 @@
+
+<script src="https://code.highcharts.com/stock/highstock.js"></script>
+<script src="https://code.highcharts.com/stock/modules/data.js"></script>
+<script src="https://code.highcharts.com/stock/modules/drag-panes.js"></script>
+<script src="https://code.highcharts.com/stock/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/stock/indicators/indicators.js"></script>
+<script src="https://code.highcharts.com/stock/indicators/volume-by-price.js"></script>
+
+
+<div id="container"></div>
+
+<body>
+<script>
+  var surprise1;
+  var surprise2;
+  var surprise3;
+  var surprise4;
+  var dateAndTime;
+  var dataToFeed=[];
+  var colorLineChart;
+
+const params = new URLSearchParams(window.location.search);
+ticker = params.get("ticker");
+console.log("ticker is passed", ticker);
+
+var URL_eps="https://hw8april3final.wl.r.appspot.com/stockdetails_EarningData?_keystock_="+ticker;
+//var URL_eps="https://hw8april3final.wl.r.appspot.com/stockdetails_EarningData?_keystock_=TSLA";
+
+fetch(URL_eps).then((response) => 
+      response.json()
+    ).then((json_to_retrieve_c) =>  {
+        console.log("Response is",json_to_retrieve_c);
+        loadEpsChart(json_to_retrieve_c);
+        
+    }).catch((error) => {
+      console.log(error);
+      
+    });
+
+
+    function loadEpsChart(data){
+        
+    if(data[0]['surprise']!=null && data[0]['surprise']!=undefined){
+      this.surprise1=data[0]['surprise'];
+    }
+    else{
+      this.surprise1=0;
+    }
+
+    if(data[1]['surprise']!=null && data[1]['surprise']!=undefined){
+      this.surprise2=data[1]['surprise'];
+    }
+    else{
+      this.surprise2=0;
+    }
+
+    if(data[2]['surprise']!=null && data[2]['surprise']!=undefined){
+      this.surprise3=data[2]['surprise'];
+    }
+    else{
+      this.surprise3=0;
+    }
+
+    if(data[3]['surprise']!=null && data[3]['surprise']!=undefined){
+      this.surprise4=data[3]['surprise'];
+    }
+    else{
+      this.surprise4=0;
+    }
+
+        
+        
+        
+        
+        
+        Highcharts.chart('container', {
+
+              chart: {
+        type: 'spline',
+        
+    },
+
+     lang: {
+          noData: 'No data is available in the chart'
+      },
+
+      title: {
+        text: 'Historical EPS Surprises',
+      },
+
+      yAxis: {
+        title: {
+          text: 'Quarterly EPS',
+        },
+      },
+
+      xAxis: {
+        //  type:'category',
+        categories: [data[0]['period']+"<br>Surprise: "+surprise1, data[1]['period']+"<br>Surprise: "+surprise2 , data[2]['period']+"<br>Surprise: "+surprise3 , data[3]['period']+"<br>Surprise: "+surprise4],
+      },
+
+      legend: {
+        layout: 'horizontal',
+        align: 'center',
+        horizontalAlign: 'middle',
+        
+      },
+
+      tooltip:{
+        shared:true,
+      },
+
+      plotOptions: {
+        series: {
+          label: {
+            connectorAllowed: false,
+          },
+          
+          
+        },
+        // tooltip:{
+        //   shared: true,
+        //   // pointFormat: '{series.name}: {point.x}', 'Surprise: '
+        // }
+      },
+
+      series: [
+        {
+          name: 'Actual',
+          data: [
+            [data[0]['period'], data[0]['actual']],
+            [data[1]['period'], data[1]['actual']],
+            [data[2]['period'], data[2]['actual']],
+            [data[3]['period'], data[3]['actual']],
+          ],
+        },
+        {
+          name: 'Estimate',
+          data: [
+            [data[0]['period'], data[0]['estimate']],
+            [data[1]['period'], data[1]['estimate']],
+            [data[2]['period'], data[2]['estimate']],
+            [data[3]['period'], data[3]['estimate']],
+          ],
+        },
+      ],
+
+      responsive: {
+        rules: [
+          {
+            condition: {
+              maxWidth: 500,
+            },
+            chartOptions: {
+              legend: {
+                layout: 'horizontal',
+                align: 'center',
+                verticalAlign: 'bottom',
+              },
+            },
+          },
+        ],
+      },
+
+
+
+})
+    }
+
+
+
+</script>
+</body>
+
+

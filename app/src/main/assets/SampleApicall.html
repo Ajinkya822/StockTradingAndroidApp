@@ -1,0 +1,42 @@
+p<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/series-label.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+<script src="https://code.highcharts.com/modules/accessibility.js"></script>
+
+
+
+
+<body>
+
+<p id="testing">
+    Ajinkya issssss
+</p>
+<script>
+var URL_c="http://hw8april3final.wl.r.appspot.com/stockdetails_2?_keystock_=TSLA";
+
+fetch(URL_c).then((response) => 
+      response.json()
+    ).then((json_to_retrieve_c) =>  {
+        console.log("Response is",json_to_retrieve_c["country"]);
+        
+        temp(json_to_retrieve_c);
+       
+    
+    }).catch((error) => {
+      console.log(error);
+      
+    });
+
+function temp(json_to_retrieve_c){
+     console.log("Response 2 is", json_to_retrieve_c["country"]);
+}
+
+
+
+</script>
+
+
+</body>
+
+

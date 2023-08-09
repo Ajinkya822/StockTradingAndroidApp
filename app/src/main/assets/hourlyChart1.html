@@ -1,0 +1,127 @@
+
+<script src="https://code.highcharts.com/stock/highstock.js"></script>
+<script src="https://code.highcharts.com/stock/modules/data.js"></script>
+<script src="https://code.highcharts.com/stock/modules/drag-panes.js"></script>
+<script src="https://code.highcharts.com/stock/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/stock/indicators/indicators.js"></script>
+<script src="https://code.highcharts.com/stock/indicators/volume-by-price.js"></script>
+
+
+<div id="container"></div>
+
+<body>
+<script>
+  var change;
+  var dateAndTime;
+  var dataToFeed=[];
+  var colorLineChart;
+
+const params = new URLSearchParams(window.location.search);
+ticker = params.get("ticker");
+console.log("ticker is passed", ticker);
+
+var URL_priceChange="https://hw8april3final.wl.r.appspot.com/stockdetails_3priceChange?_keystock_="+ticker;
+//var URL_priceChange="https://hw8april3final.wl.r.appspot.com/stockdetails_3priceChange?_keystock_=TSLA";
+
+fetch(URL_priceChange).then((response) => 
+      response.json()
+    ).then((json_to_retrieve_c) =>  {
+        dataLoadInitial(json_to_retrieve_c);
+        
+    }).catch((error) => {
+      console.log(error);
+      
+    });
+
+
+function dataLoadInitial(data) {
+    change=data['d'];
+    dateAndTime=data['t'];
+    //console.log("Initial data load", change, dateAndTime);
+
+    //API call historical chart data
+
+    var URL_HistData="https://hw8april3final.wl.r.appspot.com/stockdetails_HistoricalChartData?_keystock_="+ticker+"&toTime="+dateAndTime;
+    fetch(URL_HistData).then((response) => 
+      response.json()
+    ).then((json_to_retrieve_h) =>  {
+        console.log("Response is",json_to_retrieve_h["c"]);
+        dataLoadHist(json_to_retrieve_h);
+        
+    }).catch((error) => {
+      console.log(error);
+      
+    });
+
+  }
+
+
+    function dataLoadHist(data) {
+        var length = data[`c`].length;
+        dataToFeed=[];
+        if(change>0){
+            colorLineChart='green';
+        }
+        else if(change<0){
+            colorLineChart='red';
+        }
+        else{
+            colorLineChart='black';
+        }
+        
+        for(let i=0;i<length;i++){
+            dataToFeed.push([(data['t'][i]-25200)*1000,data['c'][i]]);
+        }
+
+        loadDailyChart();
+
+    }
+
+    function loadDailyChart(){
+        Highcharts.stockChart('container', {
+
+        title: {
+            text: ticker+' Hourly Price Variation',
+        style: {
+            color: '#808080',
+            },
+      },
+
+      exporting: {
+        enabled: false
+      },
+
+      navigator: {
+            enabled: false
+        },
+
+        tooltip: {
+        pointFormat: ticker+': {point.y}',
+      },
+
+      rangeSelector: {
+    enabled: false
+},
+
+  
+      
+      series:[
+        {
+          data:dataToFeed,
+          type:'line',
+          color: colorLineChart,
+        },
+      ],
+
+
+
+
+})
+    }
+
+
+
+</script>
+</body>
+
+
